@@ -223,7 +223,7 @@ else:
             else:
                 st.error("Erro ao carregar os dados desta Não Conformidade.")
 
-    # --- MÓDULO 4: CAUSA RAIZ & FECHAMENTO ---
+        # --- MÓDULO 4: CAUSA RAIZ & FECHAMENTO ---
     elif menu == "Causa Raiz & Fechamento":
         st.title("🔍 Análise de Causa Raiz & Encerramento (Cláusula 10.2)")
         
@@ -235,7 +235,7 @@ else:
             lista_ncs = [f"{nc.id_nc} - {nc.processo_origem}" for nc in ncs_para_causa]
             nc_selecionada = st.selectbox("Selecione a NC para Análise de Causa", lista_ncs)
             
-            # CORREÇÃO AQUI TAMBÉM: Garante que busca pelo texto do ID puro
+            # CORREÇÃO AQUI: Pegando o índice [0] para extrair apenas a String do ID puro
             id_nc_atual = nc_selecionada.split(" - ")[0]
             
             nc_obj = session.query(NaoConformidadeModel).filter_by(id_nc=id_nc_atual).first()
@@ -280,59 +280,6 @@ else:
                         st.error("Preencha a análise dos porquês e defina formalmente a causa raiz sistêmica.")
             else:
                 st.error("Erro ao carregar os dados desta Não Conformidade.")
-
-    # --- MÓDULO 4: CAUSA RAIZ & FECHAMENTO ---
-    elif menu == "Causa Raiz & Fechamento":
-        st.title("🔍 Análise de Causa Raiz & Encerramento (Cláusula 10.2)")
-        
-        ncs_para_causa = session.query(NaoConformidadeModel).filter(NaoConformidadeModel.status == "Em Análise de Causa").all()
-        
-        if not ncs_para_causa:
-            st.info("Nenhuma não conformidade aguardando análise de causa raiz profunda no momento.")
-        else:
-            lista_ncs = [f"{nc.id_nc} - {nc.processo_origem}" for nc in ncs_para_causa]
-            nc_selecionada = st.selectbox("Selecione a NC para Análise de Causa", lista_ncs)
-            id_nc_atual = nc_selecionada.split(" - ")[0]
-            nc_obj = session.query(NaoConformidadeModel).filter_by(id_nc=id_nc_atual).first()
-            
-            st.info(f"**Desvio:** {nc_obj.descricao_saida}\n\n**Contenção Aplicada:** {nc_obj.detalhes_tratativa}")
-            
-            st.subheader("🧠 Metodologia dos 5 Porquês")
-            p1 = st.text_area("1. Por que o problema aconteceu?", value=nc_obj.porque_1 or "")
-            p2 = st.text_area("2. Por que isso ocorreu? (Baseado no Porquê 1)", value=nc_obj.porque_2 or "")
-            p3 = st.text_area("3. Por que isso ocorreu? (Baseado no Porquê 2)", value=nc_obj.porque_3 or "")
-            p4 = st.text_area("4. Por que isso ocorreu? (Baseado no Porquê 3)", value=nc_obj.porque_4 or "")
-            p5 = st.text_area("5. Por que isso ocorreu? (Causa Sistêmica/Raiz)", value=nc_obj.porque_5 or "")
-            
-            causa_definida = st.text_input("Definição Final da Causa Raiz", value=nc_obj.causa_raiz_definida or "")
-            
-            st.markdown("---")
-            st.subheader("🔒 Autorização de Fechamento")
-            doc_retida = st.checkbox("Informação documentada retida na íntegra conforme Cláusula 8.7.2?", value=nc_obj.informacao_documentada_retida)
-            
-            if st.button("Finalizar e Encerrar Ocorrência"):
-                if causa_definida and p1 and p5:
-                    nc_obj.porque_1 = p1
-                    nc_obj.porque_2 = p2
-                    nc_obj.porque_3 = p3
-                    nc_obj.porque_4 = p4
-                    nc_obj.porque_5 = p5
-                    nc_obj.causa_raiz_definida = causa_definida
-                    nc_obj.informacao_documentada_retida = doc_retida
-                    nc_obj.status = "Concluído"
-                    nc_obj.data_fechamento = datetime.utcnow()
-                    nc_obj.autorizado_por = st.session_state["usuario"]
-                    
-                    # Verificar automaticamente se gerará Plano Preventivo Global (Se houver >= 3 reincidências)
-                    id_ap_gerado = verificar_reincidencia_e_gerar_ap(session, nc_obj.processo_origem, causa_definida)
-                    
-                    session.commit()
-                    st.success(f"Ocorrência {id_nc_atual} encerrada com sucesso!")
-                    if id_ap_gerado:
-                        st.warning(f"🚨 Alerta ISO 9001: Risco recorrente detectado! Plano Preventivo Global **{id_ap_gerado}** foi gerado na fila.")
-                    st.rerun()
-                else:
-                    st.error("Preencha a análise dos porquês e defina formalmente a causa raiz sistêmica.")
 
     # --- MÓDULO 5: PLANOS PREVENTIVOS ---
     elif menu == "Planos Preventivos":
