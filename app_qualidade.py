@@ -178,11 +178,10 @@ else:
         else:
             st.info("Nenhuma ocorrência registrada para gerar gráficos estruturados.")
 
-    # --- MÓDULO 2: CADASTRO COM OS NOVOS CAMPOS SOLICITADOS ---
+    # --- MÓDULO 2: CADASTRO COMPLETO E CORRIGIDO ---
     elif menu == "Registrar Saída NC":
         st.title("📝 Nova Saída Não Conforme (Cláusula 8.7.1)")
         
-        # Carrega a lista de códigos de produtos existentes do banco (Planilha simulada)
         lista_produtos = session.query(ProdutoModel).all()
         dict_produtos = {p.codigo: p.descricao for p in lista_produtos}
         
@@ -216,3 +215,5 @@ else:
                 
                 nova_nc = NaoConformidadeModel(
                     id_nc=id_nc,
+                    descricao_saida=desc,
+                    processo_origem=processo,
