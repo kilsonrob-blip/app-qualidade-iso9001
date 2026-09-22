@@ -64,7 +64,7 @@ engine = create_engine("sqlite:///iso9001_qualidade_v3.db", echo=False)
 Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 
-# --- CARGA INICIAL DE PRODUTOS (Simulação da Planilha de Fábrica) ---
+# --- CARGA INICIAL DE PRODUTOS ---
 def popular_produtos_se_vazio():
     session = Session()
     if session.query(ProdutoModel).count() == 0:
@@ -178,7 +178,7 @@ else:
         else:
             st.info("Nenhuma ocorrência registrada para gerar gráficos estruturados.")
 
-    # --- MÓDULO 2: CADASTRO COMPLETO E CORRIGIDO ---
+    # --- MÓDULO 2: CADASTRO NC ---
     elif menu == "Registrar Saída NC":
         st.title("📝 Nova Saída Não Conforme (Cláusula 8.7.1)")
         
@@ -217,3 +217,4 @@ else:
                     id_nc=id_nc,
                     descricao_saida=desc,
                     processo_origem=processo,
+                    responsavel_identificacao=st.session_state["usuario"],
