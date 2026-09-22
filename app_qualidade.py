@@ -212,7 +212,6 @@ else:
     # --- MÓDULO 4: CAUSA RAIZ ---
     elif menu == "Causa Raiz & Fechamento":
         st.title("🧠 Investigação de Causa Raiz & Encerramento")
-        
-                if st.session_state["perfil"] == "Auditor":
+            if st.session_state["perfil"] == "Auditor":
             ncs_tratadas = session.query(NaoConformidadeModel).filter(NaoConformidadeModel.status == "Em Tratativa").all()
-                if ncs_tratadas:    
+    if ncs_tratadas:    
