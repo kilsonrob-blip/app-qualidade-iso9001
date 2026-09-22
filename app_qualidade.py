@@ -215,4 +215,4 @@ else:
         
         if st.session_state["perfil"] == "Auditor":
             ncs_tratadas = session.query(NaoConformidadeModel).filter(NaoConformidadeModel.status == "Em Tratativa").all()
-            if ncs_tratadas:    
+                if ncs_tratadas:    
